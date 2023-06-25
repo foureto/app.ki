@@ -1,0 +1,23 @@
+.login-layout {
+  display: flex;
+  box-sizing: border-box;
+  width: 100%;
+  margin: auto;
+  margin-top: 30px;
+  flex-direction: column;
+  width: 320px;
+  height: 450;
+  padding: 10px;
+  border: 1px solid #545454;
+  border-radius: 5px;
+  justify-content: space-evenly;
+
+  .login-container {
+    display: flex;
+    box-sizing: border-box;
+
+    justify-content: space-evenly;
+    align-items: center;
+    margin: auto;
+  }
+}

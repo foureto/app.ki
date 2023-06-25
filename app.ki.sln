@@ -1,0 +1,56 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{17F359E0-4601-481A-B2FF-A24AFD6546E4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "App.Ki", "src\App.Ki\App.Ki.csproj", "{1112B8E1-902C-4E95-80DA-EA699637A19D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "artifacts", "artifacts", "{37DDA504-406F-4DD1-BD01-18A21BB35BE4}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		readme.md = readme.md
+		.dockerignore = .dockerignore
+		Dockerfile = Dockerfile
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "App.Ki.Commons", "src\App.Ki.Commons\App.Ki.Commons.csproj", "{63C46C01-D7E8-4E34-AAF8-7512B2AEB96D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "App.Ki.Business", "src\App.Ki.Business\App.Ki.Business.csproj", "{31208AA2-2962-4C22-A766-C2277B699751}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "App.Ki.DataAccess", "src\App.Ki.DataAccess\App.Ki.DataAccess.csproj", "{0633C687-E4EE-4073-92ED-E10E2CA9C887}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1112B8E1-902C-4E95-80DA-EA699637A19D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1112B8E1-902C-4E95-80DA-EA699637A19D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1112B8E1-902C-4E95-80DA-EA699637A19D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1112B8E1-902C-4E95-80DA-EA699637A19D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63C46C01-D7E8-4E34-AAF8-7512B2AEB96D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63C46C01-D7E8-4E34-AAF8-7512B2AEB96D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63C46C01-D7E8-4E34-AAF8-7512B2AEB96D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63C46C01-D7E8-4E34-AAF8-7512B2AEB96D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31208AA2-2962-4C22-A766-C2277B699751}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31208AA2-2962-4C22-A766-C2277B699751}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31208AA2-2962-4C22-A766-C2277B699751}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31208AA2-2962-4C22-A766-C2277B699751}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0633C687-E4EE-4073-92ED-E10E2CA9C887}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0633C687-E4EE-4073-92ED-E10E2CA9C887}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0633C687-E4EE-4073-92ED-E10E2CA9C887}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0633C687-E4EE-4073-92ED-E10E2CA9C887}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1112B8E1-902C-4E95-80DA-EA699637A19D} = {17F359E0-4601-481A-B2FF-A24AFD6546E4}
+		{63C46C01-D7E8-4E34-AAF8-7512B2AEB96D} = {17F359E0-4601-481A-B2FF-A24AFD6546E4}
+		{31208AA2-2962-4C22-A766-C2277B699751} = {17F359E0-4601-481A-B2FF-A24AFD6546E4}
+		{0633C687-E4EE-4073-92ED-E10E2CA9C887} = {17F359E0-4601-481A-B2FF-A24AFD6546E4}
+	EndGlobalSection
+EndGlobal
