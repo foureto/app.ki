@@ -6,11 +6,11 @@ public class PairInfo
     public string Quoted { get; set; }
     public string ApiSymbol { get; set; }
     public string Exchange { get; set; }
-    public double BaseMinSize { get; set; }
-    public double BaseMaxSize { get; set; }
-    public double BaseIncrement { get; set; }
-    public double QuotedMinSize { get; set; }
-    public double QuotedMaxSize { get; set; }
-    public double QuotedIncrement { get; set; }
-    public double PriceIncrement { get; set; }
+    public decimal BaseMinSize { get; set; }
+    public decimal BaseMaxSize { get; set; }
+    public decimal BaseIncrement { get; set; }
+    public decimal QuotedMinSize { get; set; }
+    public decimal QuotedMaxSize { get; set; }
+    public decimal QuotedIncrement { get; set; }
+    public decimal PriceIncrement { get; set; }
 }

@@ -35,9 +35,26 @@ internal class KucoinExchange : IExchange, IDisposable
             });
     }
 
-    public Task<AppResultList<PairInfo>> GetPairs(CancellationToken token = default)
+    public async Task<AppResultList<PairInfo>> GetPairs(CancellationToken token = default)
     {
-        throw new NotImplementedException();
+        var callResult = await _client.SpotApi.ExchangeData.GetSymbolsAsync(ct: token);
+        var result = callResult.Success
+            ? callResult.Data.Select(e => new PairInfo
+            {
+                Exchange = "Kucoin",
+                Base = e.BaseAsset,
+                Quoted = e.QuoteAsset,
+                ApiSymbol = e.Symbol,
+                BaseMinSize = e.BaseMinQuantity,
+                BaseMaxSize = e.BaseMaxQuantity,
+                BaseIncrement = e.BaseIncrement,
+                PriceIncrement = e.PriceIncrement,
+                QuotedMinSize = e.QuoteMinQuantity,
+                QuotedMaxSize = e.QuoteMaxQuantity,
+                QuotedIncrement = e.QuoteIncrement,
+            })
+            : new List<PairInfo>();
+        return AppResultList<PairInfo>.Ok(result);
     }
 
     public async Task<AppResultList<TickerInfo>> GetTickers(CancellationToken token = default)
