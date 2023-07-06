@@ -1,10 +1,10 @@
 ﻿using App.Ki.Business.Extensions;
 using App.Ki.Business.Jobs;
+using App.Ki.Business.Services.Exchanges;
 using App.Ki.Business.Services.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Quartz;
-using Mediator;
 
 namespace App.Ki.Business;
 
@@ -23,8 +23,8 @@ public static class BusinessInjections
 
             // modules
             .AddAppIdentity()
-            
-            
+            .AddExchanges(configuration)
+
             // infra
             .AddMediator();
     }
