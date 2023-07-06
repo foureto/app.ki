@@ -3,64 +3,64 @@
 namespace App.Ki.Commons.Models;
 
 [DataContract]
-public class ResultList<T> : IResult<IEnumerable<T>>
+public class AppResultList<T> : IAppResult<IEnumerable<T>>
 {
     [DataMember(Order = 3)] public IEnumerable<T> Data { get; set; }
     [DataMember(Order = 1)] public bool Success { get; set; }
     [DataMember(Order = 2)] public string Message { get; set; }
     [DataMember(Order = 4)] public int StatusCode { get; set; }
 
-    public static ResultList<T> Ok(IEnumerable<T> data, string message = null)
+    public static AppResultList<T> Ok(IEnumerable<T> data, string message = null)
     {
         return New(message, 200, data, true);
     }
 
-    public static ResultList<T> Created(IEnumerable<T> data, string message = null)
+    public static AppResultList<T> Created(IEnumerable<T> data, string message = null)
     {
         return New(message, 201, data, true);
     }
 
-    public static ResultList<T> Updated(IEnumerable<T> data = default, string message = null)
+    public static AppResultList<T> Updated(IEnumerable<T> data = default, string message = null)
     {
         return New(message, 204, data, true);
     }
 
-    public static ResultList<T> Bad(string message)
+    public static AppResultList<T> Bad(string message)
     {
         return New(message, 400);
     }
 
-    public static ResultList<T> UnAuthorized(string message)
+    public static AppResultList<T> UnAuthorized(string message)
     {
         return New(message, 401);
     }
 
-    public static ResultList<T> Forbidden(string message)
+    public static AppResultList<T> Forbidden(string message)
     {
         return New(message, 403);
     }
 
-    public static ResultList<T> NotFound(string message)
+    public static AppResultList<T> NotFound(string message)
     {
         return New(message, 404);
     }
 
-    public static ResultList<T> Failed(string message, int code = 500)
+    public static AppResultList<T> Failed(string message, int code = 500)
     {
         return New(message, code);
     }
 
-    public static ResultList<T> Failed(IResult result)
+    public static AppResultList<T> Failed(IAppResult appResult)
     {
-        return New(result.Message, result.StatusCode);
+        return New(appResult.Message, appResult.StatusCode);
     }
 
-    public static ResultList<T> Internal(string message)
+    public static AppResultList<T> Internal(string message)
     {
         return New(message);
     }
 
-    private static ResultList<T> New(
+    private static AppResultList<T> New(
         string message,
         int code = 500,
         IEnumerable<T> data = default,

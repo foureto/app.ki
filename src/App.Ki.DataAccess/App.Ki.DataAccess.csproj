@@ -6,7 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\App.Ki.Commons\App.Ki.Commons.csproj"/>
+        <ProjectReference Include="..\App.Ki.Commons\App.Ki.Commons.csproj" />
     </ItemGroup>
 
 </Project>
