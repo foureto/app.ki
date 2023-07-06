@@ -4,6 +4,7 @@ using App.Ki.Business.Services.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Quartz;
+using Mediator;
 
 namespace App.Ki.Business;
 
@@ -12,9 +13,6 @@ public static class BusinessInjections
     public static IServiceCollection AddBusiness(this IServiceCollection services, IConfiguration configuration)
     {
         return services
-            // infra
-            .AddMediator()
-            
             // jobs
             .AddQuartz(cfg =>
             {
@@ -24,6 +22,10 @@ public static class BusinessInjections
             .AddQuartzHostedService(e => e.AwaitApplicationStarted = true)
 
             // modules
-            .AddAppIdentity();
+            .AddAppIdentity()
+            
+            
+            // infra
+            .AddMediator();
     }
 }

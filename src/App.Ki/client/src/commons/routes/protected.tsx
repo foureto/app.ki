@@ -1,16 +1,19 @@
 import { RouteObject, redirect } from "react-router-dom";
-import { ProtectedLayout } from "../../layouts";
-import PageLoader from "../../components/PageLoader";
-
-import SecretPage from "../../pages/Secret";
-import { IdentityService } from "../../services/IdentityService";
+import PageLoader from "@components/PageLoader";
+import SecretPage from "@pages/Secret";
+import { IdentityService } from "@services/IdentityService";
+import { ProtectedLayout } from "@layouts/ProtectedLayout";
+import MainPage from "@pages/Main";
 import { setUserRequested } from "../stores/app.store";
 
-const children = [{ path: "*", element: <SecretPage /> }];
+const children = [
+  { path: "/main", element: <MainPage /> },
+  { path: "*", element: <SecretPage /> },
+];
 
 export const protectedRoutes: RouteObject[] = [
   {
-    path: "/app",
+    path: "/",
     element: <ProtectedLayout />,
     errorElement: <PageLoader />,
     loader: async () => {

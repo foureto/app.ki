@@ -17,7 +17,7 @@ internal class CurrentUserService : ICurrentUserService<int>
     {
         var user = _accessor.HttpContext?.User;
 
-        if (user is null || (user.Identity?.IsAuthenticated ?? false))
+        if (user is null || !user.Claims.Any())
             return new AppSessionUser();
 
         return new AppSessionUser
@@ -40,8 +40,12 @@ internal class CurrentUserService : ICurrentUserService<int>
 
     public async Task SignInGeneral(ICurrentUser<int> user, CancellationToken token = default)
     {
-        var claims = new List<Claim>().Where(e => e.Type != "exp").ToList();
-        claims.Add(new Claim(ClaimTypes.Role, claims.Find(e => e.Type == "role").Value));
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.Role, Constants.Customer),
+            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new(ClaimTypes.Name, user.Name),
+        };
 
         var principal = new ClaimsPrincipal(
             new ClaimsIdentity(claims, Constants.GeneralScheme));

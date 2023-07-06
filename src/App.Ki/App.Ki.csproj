@@ -9,7 +9,6 @@
 
     <ItemGroup>
         <PackageReference Include="Flour.Logging" Version="1.0.27-alpha.0.2" />
-        <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="7.0.5" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.4" />
         <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="7.0.5" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />

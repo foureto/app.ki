@@ -6,8 +6,9 @@ export interface User {
   name: string;
 }
 
-export interface LoginCodeRequest {
-  code: string;
+export interface LoginRequest {
+  login: string;
+  password: string;
 }
 
 export class IdentityService extends AService {
@@ -17,11 +18,7 @@ export class IdentityService extends AService {
     return this.get("me");
   }
 
-  public static login(): Promise<ApiResponse> {
-    return this.post("login");
-  }
-
-  public static loginCode(props: LoginCodeRequest): Promise<ApiResponse> {
-    return this.post("login/code", props);
+  public static login(props: LoginRequest): Promise<ApiResponse> {
+    return this.post("login", props);
   }
 }

@@ -5,7 +5,11 @@ using Mediator;
 
 namespace App.Ki.Business.Handlers.Identity;
 
-public record LoginCommand(string Login, string Password) : IRequest<AppResult>;
+public class LoginCommand : IRequest<AppResult>
+{
+    public string Login { get; set; }
+    public string Password { get; set; }
+}
 
 public class LoginHandler : IRequestHandler<LoginCommand, AppResult>
 {
