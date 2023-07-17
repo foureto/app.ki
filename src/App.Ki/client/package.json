@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@microsoft/signalr": "^7.0.9",
+    "antd": "^5.7.0",
     "effector": "^22.8.6",
     "effector-react": "^22.5.3",
     "effector-storage": "^6.0.1",

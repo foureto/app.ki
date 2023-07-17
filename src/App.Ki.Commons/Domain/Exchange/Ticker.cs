@@ -4,8 +4,5 @@ public record Ticker(
     Symbol Symbol,
     decimal Bid,
     decimal Ask,
-    decimal Last, 
-    decimal Lowest24H,
-    decimal Highest24H,
-    decimal ChangePercent,
+    decimal Last,
     DateTime Stamp);

@@ -5,9 +5,11 @@ import { IdentityService } from "@services/IdentityService";
 import { ProtectedLayout } from "@layouts/ProtectedLayout";
 import MainPage from "@pages/Main";
 import { setUserRequested } from "../stores/app.store";
+import CryptoFeed from "@pages/Crypto/CryptoFeed";
 
 const children = [
   { path: "/main", element: <MainPage /> },
+  { path: "/crypto/feed", element: <CryptoFeed /> },
   { path: "*", element: <SecretPage /> },
 ];
 

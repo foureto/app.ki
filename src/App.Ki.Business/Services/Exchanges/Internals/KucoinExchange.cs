@@ -1,5 +1,6 @@
 ﻿using App.Ki.Business.Services.Exchanges.Models;
 using App.Ki.Business.Services.Exchanges.Settings;
+using App.Ki.Commons.Domain.Exchange;
 using App.Ki.Commons.Models;
 using Kucoin.Net.Clients;
 using Kucoin.Net.Objects;
@@ -14,6 +15,8 @@ internal class KucoinExchange : IExchange, IDisposable
     private readonly KucoinRestClient _client;
     private readonly IOptions<KucoinSettings> _options;
     private readonly ILogger<KucoinExchange> _logger;
+
+    private const string Name = "Kucoin";
 
     public KucoinExchange(
         IHttpClientFactory factory,
@@ -57,28 +60,43 @@ internal class KucoinExchange : IExchange, IDisposable
         return AppResultList<PairInfo>.Ok(result);
     }
 
-    public async Task<AppResultList<TickerInfo>> GetTickers(CancellationToken token = default)
+    public async Task<AppResultList<Ticker>> GetTickers(CancellationToken token = default)
     {
         var callResult = await _client.SpotApi.ExchangeData.GetTickersAsync(token);
         var result = callResult.Success
-            ? callResult.Data.Data.Select(e => new TickerInfo
+            ? callResult.Data.Data.Select(e =>
             {
-                Exchange = "Kucoin",
-                Bid = e.BestBidPrice.GetValueOrDefault(),
-                Ask = e.BestAskPrice.GetValueOrDefault(),
-                BaseVolume = e.Volume.GetValueOrDefault(),
-                QuotedVolume = e.QuoteVolume.GetValueOrDefault(),
-                ApiSymbol = e.Symbol
+                var ticker = e.Symbol.Split('-');
+                return new Ticker(
+                    new Symbol(ticker[0], ticker[1], e.Symbol, Name),
+                    e.BestBidPrice.GetValueOrDefault(),
+                    e.BestAskPrice.GetValueOrDefault(),
+                    e.AveragePrice.GetValueOrDefault(),
+                    DateTime.UtcNow);
             })
-            : new List<TickerInfo>();
+            : new List<Ticker>();
 
-        return AppResultList<TickerInfo>.Ok(result);
+        return AppResultList<Ticker>.Ok(result);
     }
 
-    public Task<AppResult<OrderBookInfo>> GetOrderBook(
+    public async Task<AppResult<OrderBookInfo>> GetOrderBook(
         string apiSymbol, int depth = 100, CancellationToken token = default)
     {
-        throw new NotImplementedException();
+        var callResult = await _client.SpotApi.ExchangeData.GetAggregatedPartialOrderBookAsync(apiSymbol, depth, token);
+        if (!callResult.Success)
+            return AppResult<OrderBookInfo>.Failed("Could not get order book");
+
+        var result = new OrderBookInfo
+        {
+            Exchange = Name,
+            ApiSymbol = callResult.Data.Symbol ?? apiSymbol,
+            Asks = callResult.Data.Asks.Select(e =>
+                new OrderBookEntry { Price = (double)e.Price, Quantity = (double)e.Quantity }).ToArray(),
+            Bids = callResult.Data.Bids.Select(e =>
+                new OrderBookEntry { Price = (double)e.Price, Quantity = (double)e.Quantity }).ToArray(),
+        };
+
+        return AppResult<OrderBookInfo>.Ok(result);
     }
 
     public void Dispose()

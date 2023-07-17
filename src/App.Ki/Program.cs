@@ -1,4 +1,5 @@
 using App.Ki.Business;
+using App.Ki.Business.Hubs;
 using Flour.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,7 +21,7 @@ app
     .UseEndpoints(_ => { })
     .Use((ctx, next) =>
     {
-        if (!ctx.Request.Path.StartsWithSegments("/api")) 
+        if (!ctx.Request.Path.StartsWithSegments("/api") || !ctx.Request.Path.StartsWithSegments("/ws"))
             return next();
         ctx.Response.StatusCode = 404;
         return Task.CompletedTask;
@@ -34,5 +35,5 @@ app.UseSpa(spa =>
 });
 
 app.MapControllers();
-
+app.MapHub<FeedHub>("/ws/feed");
 app.Run();

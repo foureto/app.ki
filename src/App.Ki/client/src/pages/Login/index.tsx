@@ -11,12 +11,11 @@ import { LoginRequest } from "@services/IdentityService";
 
 const LoginPage: React.FC = () => {
   const user = useStore($userStore);
-  const { loading, step } = useStore($data);
+  const { loading } = useStore($data);
 
   const formik = useFormik({
     initialValues: { login: "", password: "" },
     onSubmit: (values: LoginRequest) => {
-      console.log(values);
       loginOneRequested(values);
     },
   });

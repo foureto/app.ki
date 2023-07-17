@@ -22,6 +22,7 @@ public static class BusinessInjections
             .AddQuartzHostedService(e => e.AwaitApplicationStarted = true)
 
             // modules
+            .AddSignalR().Services
             .AddAppIdentity()
             .AddExchanges(configuration)
 

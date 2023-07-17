@@ -22,7 +22,7 @@ public class LoginHandler : IRequestHandler<LoginCommand, AppResult>
 
     public async ValueTask<AppResult> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
-        await _userService.SignInGeneral(new AppSessionUser { Id = 0, Name = "Name" }, cancellationToken);
+        await _userService.SignInGeneral(new AppSessionUser { Id = 1, Name = "Name" }, cancellationToken);
         return AppResult.Ok();
     }
 }
