@@ -25,14 +25,18 @@ internal class TickerJob : IJob
         var exchanges = _factory.GetAll();
         foreach (var exchange in exchanges)
         {
-            var tickers = await exchange.GetTickers(context.CancellationToken);
-            if (!tickers.Success) continue;
-
-            await _feedHub.Clients.All.Tickers(tickers.Data);
-
-            _logger.LogInformation("Got tickers from {Exchange}", exchange.GetType().Name);
+            // Task.Run(() => RunSubscription(exchange, context.CancellationToken));
+            
+            // var tickers = await exchange.GetTickers(context.CancellationToken);
+            // if (!tickers.Success) continue;
+            //
+            // await _feedHub.Clients.All.Tickers(tickers.Data);
+            //
+            // _logger.LogInformation("Got tickers from {Exchange}", exchange.GetType().Name);
         }
 
         _logger.LogInformation("Get tickers stub");
     }
+
+    
 }

@@ -20,6 +20,7 @@ public static class BusinessInjections
                 cfg.AddAppJob<TickerJob>(services, configuration, null, TimeSpan.FromSeconds(15), 0);
             })
             .AddQuartzHostedService(e => e.AwaitApplicationStarted = true)
+            .AddHostedService<TickersBackgroundJob>()
 
             // modules
             .AddSignalR().Services

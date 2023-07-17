@@ -7,6 +7,7 @@ namespace App.Ki.Business.Hubs;
 public interface IFeedHub
 {
     Task Tickers(IEnumerable<Ticker> tickers, CancellationToken token = default);
+    Task Ticker(Ticker ticker, CancellationToken token = default);
 }
 
 public class FeedHub : Hub<IFeedHub>

@@ -1,4 +1,5 @@
-﻿using App.Ki.Business.Services.Exchanges.Models;
+﻿using System.Runtime.CompilerServices;
+using App.Ki.Business.Services.Exchanges.Models;
 using App.Ki.Business.Services.Exchanges.Settings;
 using App.Ki.Commons.Domain.Exchange;
 using App.Ki.Commons.Models;
@@ -91,12 +92,18 @@ internal class KucoinExchange : IExchange, IDisposable
             Exchange = Name,
             ApiSymbol = callResult.Data.Symbol ?? apiSymbol,
             Asks = callResult.Data.Asks.Select(e =>
-                new OrderBookEntry { Price = (double)e.Price, Quantity = (double)e.Quantity }).ToArray(),
+                new OrderBookEntry {Price = (double) e.Price, Quantity = (double) e.Quantity}).ToArray(),
             Bids = callResult.Data.Bids.Select(e =>
-                new OrderBookEntry { Price = (double)e.Price, Quantity = (double)e.Quantity }).ToArray(),
+                new OrderBookEntry {Price = (double) e.Price, Quantity = (double) e.Quantity}).ToArray(),
         };
 
         return AppResult<OrderBookInfo>.Ok(result);
+    }
+
+    public async IAsyncEnumerable<Ticker> SubscribeTickers([EnumeratorCancellation] CancellationToken token = default)
+    {
+        await Task.Yield();
+        yield break;
     }
 
     public void Dispose()
