@@ -21,7 +21,8 @@ app
     .UseEndpoints(_ => { })
     .Use((ctx, next) =>
     {
-        if (!ctx.Request.Path.StartsWithSegments("/api") || !ctx.Request.Path.StartsWithSegments("/ws"))
+        if (!ctx.Request.Path.StartsWithSegments("/api") || 
+            !ctx.Request.Path.StartsWithSegments("/ws"))
             return next();
         ctx.Response.StatusCode = 404;
         return Task.CompletedTask;

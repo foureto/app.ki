@@ -23,10 +23,10 @@ internal class TinkoffClient : IExchange
         var data = await _apiClient.Instruments.SharesAsync(token);
         var result = data.Instruments.Select(e => new PairInfo
         {
-            Exchange = "Tinkoff",
-            Base = e.Ticker,
-            Quoted = "RUR",
-            ApiSymbol = e.Figi,
+            Symbol = new Symbol(e.Ticker, e.Currency, e.Figi, "Tinkoff"),
+            BaseIncrement = e.MinPriceIncrement.ToDecimal(),
+            BaseMinSize = 1,
+            PriceIncrement = e.Nominal.ToDecimal(),
         });
 
         return AppResultList<PairInfo>.Ok(result);
@@ -46,29 +46,30 @@ internal class TinkoffClient : IExchange
     public async IAsyncEnumerable<Ticker> SubscribeTickers([EnumeratorCancellation] CancellationToken token = default)
     {
         var shares = (await _apiClient.Instruments.GetAssetsAsync(
-                new AssetsRequest {InstrumentType = InstrumentType.Share}))
-            .Assets.SelectMany(e => e.Instruments).ToDictionary(e => e.Uid, e => e);
+                new AssetsRequest { InstrumentType = InstrumentType.Share }))
+            .Assets.SelectMany(e => e.Instruments).ToDictionary(e => e.Figi, e => e);
 
         using var stream = _apiClient.MarketDataStream.MarketDataStream();
         await stream.RequestStream.WriteAsync(new MarketDataRequest
         {
-            SubscribeCandlesRequest = new SubscribeCandlesRequest
+            SubscribeLastPriceRequest = new SubscribeLastPriceRequest
             {
-                Instruments =
-                {
-                    shares.Keys.Select(k => new CandleInstrument
-                        {InstrumentId = k, Interval = SubscriptionInterval.OneMinute})
-                }
-            }
+                Instruments = { shares.Keys.Select(k => new LastPriceInstrument { Figi = k }) },
+                SubscriptionAction = SubscriptionAction.Subscribe,
+            },
         }, token);
 
         await foreach (var pack in stream.ResponseStream.ReadAllAsync(cancellationToken: token))
-        foreach (var item in pack?.SubscribeCandlesResponse?.CandlesSubscriptions ??
-                             new RepeatedField<CandleSubscription>())
-            if (item?.InstrumentUid != null)
-                yield return new Ticker(
-                    new Symbol(shares[item.InstrumentUid].Ticker, "RUR", item.InstrumentUid, "Tinkoff"), 0, 0,
-                    0,
-                    DateTime.UtcNow);
+        {
+            if (pack.LastPrice is null)
+                continue;
+
+            var price = pack.LastPrice.Price.ToDecimal();
+
+            yield return new Ticker(
+                new Symbol(shares[pack.LastPrice.Figi].Ticker, "RUB", pack.LastPrice.Figi, "Tinkoff"),
+                price, price, price,
+                DateTime.UtcNow);
+        }
     }
 }

@@ -20,13 +20,17 @@
 
 .main {
   grid-area: main;
-  padding: 15px;
+  padding: 16px;
 
   .main-content {
-    height: 90%;
+    display: flex;
+    align-content: stretch;
     border: 1px solid var(--color-grey-light);
     border-radius: 4px;
-    padding: 16px;
+
+    .main-container {
+      width: 100%;
+    }
   }
 }
 

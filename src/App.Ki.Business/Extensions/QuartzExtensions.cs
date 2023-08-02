@@ -31,7 +31,7 @@ internal static class QuartzExtensions
                 opts
                     .ForJob(typeof(T).Name)
                     .WithIdentity($"{typeof(T).Name}-trigger")
-                    .StartAt(startTime)
-                    .WithSimpleSchedule(e => e.WithInterval(tabPeriod).RepeatForever()));
+                    .WithSimpleSchedule(e => e.WithInterval(tabPeriod).RepeatForever())
+                    .StartAt(startTime));
     }
 }

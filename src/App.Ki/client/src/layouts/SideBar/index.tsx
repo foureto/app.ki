@@ -14,7 +14,7 @@ const getItem = (label: string, link: string, children?: MenuItemType[]) => {
 const SideBar: React.FC = () => {
   const menu = React.useMemo(() => {
     return [
-      getItem("Main", "/"),
+      getItem("Main", "/main"),
       getItem("Crypto", "/crypto/feed", [
         getItem("Feed", "/crypto/feed"),
         getItem("Arbitrage", "/"),

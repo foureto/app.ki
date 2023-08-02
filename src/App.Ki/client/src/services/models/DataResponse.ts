@@ -6,4 +6,24 @@ export interface ApiResponse {
 
 export interface DataResponse<T> extends ApiResponse {
   data: T;
+  page?: number;
+  count?: number;
+  total?: number;
+}
+
+export interface Filter {
+  field: string;
+  value?: string | number | number[] | string[];
+}
+
+export interface Sort {
+  field: string;
+  order: number;
+}
+
+export interface PagedRequest {
+  pageIndex: number;
+  pageSize: number;
+  filter?: Filter[];
+  listSort?: Sort[];
 }

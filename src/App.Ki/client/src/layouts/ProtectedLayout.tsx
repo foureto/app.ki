@@ -4,9 +4,9 @@ import { Navigate, useOutlet } from "react-router-dom";
 import { $userStore } from "../commons/stores/app.store";
 
 import "./ProtectedLayout.scss";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
-import SideBar from "../components/SideBar";
+import Header from "./Header";
+import Footer from "./Footer";
+import SideBar from "./SideBar";
 
 export const ProtectedLayout: React.FC = () => {
   const user = useStore($userStore);
@@ -21,7 +21,9 @@ export const ProtectedLayout: React.FC = () => {
       <SideBar />
       <Header />
       <main className="main">
-        <section className="main-content">{outlet}</section>
+        <section className="main-content">
+          <div className="main-container">{outlet}</div>
+        </section>
       </main>
       <Footer>footer</Footer>
     </div>

@@ -2,7 +2,7 @@ import { combine, createEvent, createStore, sample } from "effector";
 import { createEffect } from "effector/compat";
 import { IdentityService, LoginRequest } from "@services/IdentityService";
 import { ApiResponse } from "@services/models/DataResponse";
-import { userRequested } from "../../commons/stores/app.store";
+import { userRequested } from "./app.store";
 
 const loginOneRequested = createEvent<LoginRequest>();
 

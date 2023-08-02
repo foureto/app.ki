@@ -1,5 +1,8 @@
-﻿using App.Ki.Business.Services.Identity;
+﻿using App.Ki.Business.Handlers.Feed;
+using App.Ki.Business.Models.Filters;
+using App.Ki.Business.Services.Identity;
 using App.Ki.Commons.Domain.Exchange;
+using Mediator;
 using Microsoft.AspNetCore.SignalR;
 
 namespace App.Ki.Business.Hubs;
@@ -12,15 +15,18 @@ public interface IFeedHub
 
 public class FeedHub : Hub<IFeedHub>
 {
+    private readonly IMediator _mediator;
     private readonly ICurrentUserService<int> _userService;
-    private readonly IHubContext<FeedHub, IFeedHub> _hubContext;
 
-    public FeedHub(
-        ICurrentUserService<int> userService,
-        IHubContext<FeedHub, IFeedHub> hubContext)
+    public FeedHub(IMediator mediator, ICurrentUserService<int> userService)
     {
+        _mediator = mediator;
         _userService = userService;
-        _hubContext = hubContext;
+    }
+
+    public async Task SubscribeTickers(TickerFilterDto filter)
+    {
+        await _mediator.Send(new SubscribeTickersQuery(filter ?? new(), Context.ConnectionId));
     }
 
     public override Task OnConnectedAsync()

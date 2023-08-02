@@ -1,0 +1,31 @@
+.cell-down {
+  animation: color-change-down 1s ease;
+}
+
+.cell-up {
+  animation: color-change-up 1s ease;
+}
+
+@keyframes color-change-down {
+  0% {
+    background-color: #fff;
+  }
+  50% {
+    background-color: var(--color-danger-light);
+  }
+  100% {
+    background-color: #fff;
+  }
+}
+
+@keyframes color-change-up {
+  0% {
+    background-color: #fff;
+  }
+  50% {
+    background-color: var(--color-success-light);
+  }
+  100% {
+    background-color: #fff;
+  }
+}

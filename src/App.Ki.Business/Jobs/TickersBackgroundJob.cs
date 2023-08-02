@@ -1,5 +1,6 @@
 ﻿using App.Ki.Business.Hubs;
 using App.Ki.Business.Services.Exchanges;
+using App.Ki.Business.Services.Feed;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -9,11 +10,16 @@ namespace App.Ki.Business.Jobs;
 internal class TickersBackgroundJob : BackgroundService
 {
     private readonly IServiceProvider _serviceProvider;
+    private readonly IDataYard _dataYard;
     private readonly IHubContext<FeedHub, IFeedHub> _feedHub;
 
-    public TickersBackgroundJob(IServiceProvider serviceProvider, IHubContext<FeedHub, IFeedHub> feedHub)
+    public TickersBackgroundJob(
+        IServiceProvider serviceProvider,
+        IDataYard dataYard,
+        IHubContext<FeedHub, IFeedHub> feedHub)
     {
         _serviceProvider = serviceProvider;
+        _dataYard = dataYard;
         _feedHub = feedHub;
     }
 
@@ -42,6 +48,6 @@ internal class TickersBackgroundJob : BackgroundService
     private async Task RunSubscription(IExchange exchange, CancellationToken token)
     {
         await foreach (var item in exchange.SubscribeTickers(token))
-            await _feedHub.Clients.All.Ticker(item, token);
+            _dataYard.Enqueue(item);
     }
 }

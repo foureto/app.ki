@@ -5,6 +5,7 @@ import {
   HubConnection,
   HubConnectionBuilder,
   HubConnectionState,
+  IStreamSubscriber,
 } from "@microsoft/signalr";
 
 export enum WsStatus {
@@ -31,7 +32,6 @@ export function useWebSocket(
   onConnected?: () => void,
   onError?: (e: Error) => void
 ) {
-  console.log("ws _1");
   const status = useStore(wsStatus);
   const connectionRef = useRef<HubConnection>();
 
@@ -74,11 +74,29 @@ export function useWebSocket(
 
   const subscribe = useCallback(
     <T>(endpoint: string, handler: (msg: T) => void) => {
-      if (connectionRef.current?.state === HubConnectionState.Connected)
+      if (connectionRef.current?.state === HubConnectionState.Connected) {
         connectionRef.current.on(endpoint, handler);
+      }
     },
     [connectionRef]
   );
+
+  // const subscribe = useCallback(
+  //   <T>(endpoint: string, handler: (msg: T) => void, ...args: any[]) => {
+  //     if (connectionRef.current?.state === HubConnectionState.Connected) {
+  //       console.log("subscription request");
+  //       connectionRef.current.stream(endpoint, args).subscribe({
+  //         next: (item: T) => {
+  //           console.log(item);
+  //           handler(item);
+  //         },
+  //         complete: () => console.log("Feed complete"),
+  //         error: (e: Error) => console.log(e),
+  //       } as IStreamSubscriber<T>);
+  //     }
+  //   },
+  //   [connectionRef]
+  // );
 
   const unSubscribe = useCallback(
     (endpoint: string) => {

@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using System.Threading.Channels;
 using App.Ki.Business.Services.Exchanges.Models;
 using App.Ki.Business.Services.Exchanges.Settings;
 using App.Ki.Commons.Domain.Exchange;
@@ -27,6 +28,7 @@ internal class KucoinExchange : IExchange, IDisposable
     {
         _options = options;
         _logger = logger;
+
         _client = new KucoinRestClient(
             factory.CreateClient(nameof(KucoinExchange)),
             loggerFactory,
@@ -45,10 +47,7 @@ internal class KucoinExchange : IExchange, IDisposable
         var result = callResult.Success
             ? callResult.Data.Select(e => new PairInfo
             {
-                Exchange = "Kucoin",
-                Base = e.BaseAsset,
-                Quoted = e.QuoteAsset,
-                ApiSymbol = e.Symbol,
+                Symbol = new Symbol(e.BaseAsset, e.QuoteAsset, e.Symbol, "Kucoin"),
                 BaseMinSize = e.BaseMinQuantity,
                 BaseMaxSize = e.BaseMaxQuantity,
                 BaseIncrement = e.BaseIncrement,
@@ -92,9 +91,9 @@ internal class KucoinExchange : IExchange, IDisposable
             Exchange = Name,
             ApiSymbol = callResult.Data.Symbol ?? apiSymbol,
             Asks = callResult.Data.Asks.Select(e =>
-                new OrderBookEntry {Price = (double) e.Price, Quantity = (double) e.Quantity}).ToArray(),
+                new OrderBookEntry { Price = (double)e.Price, Quantity = (double)e.Quantity }).ToArray(),
             Bids = callResult.Data.Bids.Select(e =>
-                new OrderBookEntry {Price = (double) e.Price, Quantity = (double) e.Quantity}).ToArray(),
+                new OrderBookEntry { Price = (double)e.Price, Quantity = (double)e.Quantity }).ToArray(),
         };
 
         return AppResult<OrderBookInfo>.Ok(result);
@@ -102,8 +101,35 @@ internal class KucoinExchange : IExchange, IDisposable
 
     public async IAsyncEnumerable<Ticker> SubscribeTickers([EnumeratorCancellation] CancellationToken token = default)
     {
-        await Task.Yield();
-        yield break;
+        using var socket = new KucoinSocketClient(opts =>
+        {
+            opts.ApiCredentials = new KucoinApiCredentials(
+                _options.Value.ApiKey,
+                _options.Value.ApiSecret,
+                _options.Value.ApiSecretPhrase);
+        });
+
+        var channel = Channel.CreateUnbounded<Ticker>();
+        var tickers = (await GetTickers(token)).Data.ToDictionary(e => e.Symbol.ApiSymbol, e => e);
+
+        await socket.SpotApi.SubscribeToTickerUpdatesAsync(
+            tickers.Keys.Take(10),
+            e =>
+            {
+                var ticker = new Ticker(
+                    tickers[e.Data.Symbol].Symbol,
+                    (e.Data.BestBidPrice ?? e.Data.BestAskPrice ?? e.Data.LastPrice).GetValueOrDefault(),
+                    (e.Data.BestAskPrice ?? e.Data.BestAskPrice ?? e.Data.LastPrice).GetValueOrDefault(),
+                    (e.Data.LastPrice ?? e.Data.BestBidPrice ?? e.Data.BestAskPrice).GetValueOrDefault(),
+                    DateTime.UtcNow);
+                channel.Writer.TryWrite(ticker);
+            },
+            token);
+
+        await foreach (var ticker in channel.Reader.ReadAllAsync(token))
+            yield return ticker;
+
+        channel.Writer.TryComplete();
     }
 
     public void Dispose()

@@ -3,7 +3,7 @@ import { Navigate } from "react-router-dom";
 import { useStore } from "effector-react";
 import { useFormik } from "formik";
 import PageLoader from "@components/PageLoader";
-import { $data, loginOneRequested } from "./login.store";
+import { $data, loginOneRequested } from "../../commons/stores/loginPage.store";
 import { $userStore } from "../../commons/stores/app.store";
 
 import "./login.scss";
