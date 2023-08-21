@@ -24,4 +24,6 @@
         <ProjectReference Include="..\App.Ki.DataAccess\App.Ki.DataAccess.csproj" />
     </ItemGroup>
 
+
+
 </Project>

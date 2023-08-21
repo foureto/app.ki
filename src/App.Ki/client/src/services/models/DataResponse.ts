@@ -27,3 +27,13 @@ export interface PagedRequest {
   filter?: Filter[];
   listSort?: Sort[];
 }
+
+export interface ApiPageRequest {
+  pageIndex: number;
+  pageSize: number;
+  listSort?: Sort[];
+}
+
+export interface ApiFilteredRequest<T> extends ApiPageRequest {
+  filter?: T;
+}

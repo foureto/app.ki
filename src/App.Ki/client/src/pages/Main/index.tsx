@@ -10,7 +10,10 @@ import { Ticker } from "@services/FeedDataService";
 import { useWebSocket } from "@services/helpers/socket.hook";
 import "./mainPage.scss";
 
-const Colorable: React.FC<any> = ({ move, children }) => {
+const Colorable: React.FC<{ children: React.ReactNode; move?: number }> = ({
+  move,
+  children,
+}) => {
   return (
     <div className={!move ? "" : move < 0 ? "cell-down" : "cell-up"}>
       {children}
@@ -69,8 +72,8 @@ const MainPage: React.FC = () => {
   React.useEffect(() => {
     tickersRequested({});
     if (status === 0) {
-      sendMessage("SubscribeTickers");
-      subscribe<Ticker>("Ticker", tickerReceived, {});
+      sendMessage("SubscribeTickers", {});
+      subscribe<Ticker>("Ticker", tickerReceived);
     }
   }, [subscribe, sendMessage, status]);
 

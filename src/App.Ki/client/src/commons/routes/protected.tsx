@@ -6,9 +6,11 @@ import { ProtectedLayout } from "@layouts/ProtectedLayout";
 import MainPage from "@pages/Main";
 import { setUserRequested } from "../stores/app.store";
 import CryptoFeed from "@pages/Crypto/CryptoFeed";
+import Backtesting from "@pages/Backtesting";
 
 const children = [
   { path: "/main", element: <MainPage /> },
+  { path: "/backtests", element: <Backtesting /> },
   { path: "/crypto/feed", element: <CryptoFeed /> },
   { path: "*", element: <SecretPage /> },
 ];

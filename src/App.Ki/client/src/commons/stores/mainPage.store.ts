@@ -33,7 +33,7 @@ const $tickers = createStore<Ticker[]>([])
     );
 
     if (!old) return s;
-    const move = p.bid - old.bid;
+    const move = p.last - old.last;
 
     s.splice(s.indexOf(old), 1, { ...p, ...{ move } });
     return [...s];
