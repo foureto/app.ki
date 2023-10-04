@@ -6,6 +6,7 @@ public enum TimeRange
     ThreeMinutes = 3,
     FiveMinutes = 5,
     TenMinutes = 10,
+    FifteenMinutes = 15,
     ThirtyMinutes = 30,
     Hour = 60,
     TwoHours = 120,

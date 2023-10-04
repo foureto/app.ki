@@ -17,7 +17,6 @@
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.8" />
         <PackageReference Include="Quartz.Extensions.Hosting" Version="3.6.3" />
-        <PackageReference Include="Tinkoff.InvestApi" Version="0.6.1" />
     </ItemGroup>
 
     <ItemGroup>

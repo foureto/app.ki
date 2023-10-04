@@ -18,4 +18,8 @@ public class FeedController : _BaseController
     [HttpGet("tickers")]
     public async Task<IActionResult> GetTickers([FromQuery] TickerFilterDto filter)
         => Respond(await _mediator.Send(new GetTickersQuery(filter)));
+    
+    [HttpGet("history")]
+    public async Task<IActionResult> GetHistoricalData([FromQuery] GetCandlesFilterDto filter)
+        => Respond(await _mediator.Send(new GetCandlesQuery(filter)));
 }

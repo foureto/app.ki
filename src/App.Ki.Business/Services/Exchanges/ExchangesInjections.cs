@@ -13,20 +13,11 @@ internal static class ExchangesInjections
 
     public static IServiceCollection AddExchanges(this IServiceCollection services, IConfiguration configuration)
     {
-        Exchanges.Add(nameof(TinkoffClient), typeof(TinkoffClient));
-        
+
         return services
             .AddScoped<Func<string, IExchange>>(sp => name => sp.GetRequiredService(Exchanges[name]) as IExchange)
             .AddScoped<IExchangeFactory, ExchangeFactory>()
-            .AddExchange<KucoinExchange, KucoinSettings>(configuration, "Kucoin", "exchanges:kucoin")
-            .Configure<TinkoffSettings>(opts => configuration.GetSection("exchanges:tinkoff").Bind(opts))
-            .AddInvestApiClient((sp, settings) =>
-            {
-                var opts = sp.GetRequiredService<IOptions<TinkoffSettings>>();
-                settings.AccessToken = opts.Value.ApiKey;
-                settings.Sandbox = opts.Value.BaseUrl == "sandbox";
-            })
-            .AddScoped<TinkoffClient>();
+            .AddExchange<KucoinExchange, KucoinSettings>(configuration, "Kucoin", "exchanges:kucoin");
     }
 
     private static IServiceCollection AddExchange<T, TS>(
