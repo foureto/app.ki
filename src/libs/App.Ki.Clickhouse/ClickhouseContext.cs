@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using App.Ki.Clickhouse.Helpers;
-using App.Ki.Clickhouse.Internals;
+﻿using App.Ki.Clickhouse.Internals;
 
 namespace App.Ki.Clickhouse;
 
@@ -11,27 +9,17 @@ public class ClickhouseContext
     public ClickhouseContext(ClickhouseConnectionFactory factory)
     {
         _factory = factory;
+        InitCollections();
     }
-
-    public void Add<T>(T entity) where T : class
-        => QueuedBuffer.Push(entity);
-
-    public void AddMany<T>(IEnumerable<T> entities) where T : class
+    
+    private void InitCollections()
     {
-        foreach (var entity in entities)
-            QueuedBuffer.Push(entity);
+        var collections = GetType().GetProperties()
+            .Where(p => p.PropertyType.IsGenericType &&
+                        p.PropertyType.GetGenericTypeDefinition() == typeof(ChSet<>))
+            .ToList();
+
+        collections.ForEach(p => p.SetValue(this, Activator.CreateInstance(p.PropertyType, _factory.GetConnection().Result)));
     }
 
-    public async IAsyncEnumerable<T> Get<T>(
-        string query,
-        IDictionary<string, object> statements = null,
-        [EnumeratorCancellation] CancellationToken token = default)
-    {
-        await using var session = await _factory.GetConnection();
-        await foreach (var item in session.Get<T>(query, statements, token))
-            yield return item;
-    }
-
-    public IQueryable<T> Query<T>()
-        => Enumerable.Empty<T>().AsQueryable();
 }

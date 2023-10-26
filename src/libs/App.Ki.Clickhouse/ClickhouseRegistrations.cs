@@ -2,6 +2,8 @@
 using App.Ki.Clickhouse.Settings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 
 namespace App.Ki.Clickhouse;
 
@@ -9,6 +11,16 @@ public static class ClickhouseRegistrations
 {
     private const string DefaultSection = "clickhouse";
 
+    public static IServiceCollection AddClickhouse<T>(
+        this IServiceCollection services,
+        IConfiguration configuration,
+        string sectionName = DefaultSection) where T : ClickhouseContext
+    {
+        return services
+            .AddClickhouse(configuration, sectionName)
+            .AddSingleton<T>();
+    }
+    
     public static IServiceCollection AddClickhouse(
         this IServiceCollection services,
         IConfiguration configuration,
@@ -17,10 +29,11 @@ public static class ClickhouseRegistrations
         services
             .Configure<ClickhouseSettings>(opts => configuration.GetSection(sectionName).Bind(opts))
             .AddHostedService<BufferFlusher>()
-            .AddTransient<ClickhouseConnectionFactory>()
-            .AddTransient<IMigrationService, MigrationService>()
-            .AddTransient<ClickhouseContext>();
+            .AddSingleton<ClickhouseConnectionFactory>()
+            .AddTransient<IMigrationService, MigrationService>();
 
         return services;
     }
+    
+    
 }

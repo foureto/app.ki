@@ -39,67 +39,17 @@ internal static class CachedObjectInvertor
         return query;
     }
 
-    internal static Dictionary<string, object> GetColumnsWithValues<T>(List<T> data)
+    internal static Dictionary<string, object> GetColumnsWithValuesSingle<T>(T item)
+        => GetColumnsWithValues(new[] {item});
+    
+    internal static Dictionary<string, object> GetColumnsWithValues<T>(T[] data)
     {
         var type = data.FirstOrDefault()?.GetType();
         if (type is null)
             return new Dictionary<string, object>();
 
         if (!TypesCache.ContainsKey(type))
-        {
-            var query = type.GetProperties().Select(p =>
-            {
-                var attribute = p.GetCustomAttribute(typeof(ChFieldAttribute)) as ChFieldAttribute;
-                return new {attribute?.Sort, Prop = p};
-            }).ToList();
-
-            if (query.Any(e => e.Sort != null))
-                query = query.OrderByDescending(e => e.Sort.HasValue).ThenBy(e => e.Sort).ToList();
-            
-            TypesCache.TryAdd(type, new Dictionary<string, Func<object, object>>());
-            foreach (var propertyInfo in query.Select(e => e.Prop))
-            {
-                var property = propertyInfo.Name;
-                var parameter = Expression.Parameter(typeof(object));
-                var cast = Expression.Convert(parameter, type);
-                var propertyGetter = Expression.Property(cast, property);
-
-                var callExpr = propertyInfo.PropertyType switch
-                {
-                    {IsEnum: true} =>
-                        Expression.Call(
-                            propertyGetter, typeof(Enum).GetMethods().FirstOrDefault(e => e.Name == "ToString")!, null),
-                    _ => null
-                };
-                
-                if (callExpr != null)
-                {
-                    TypesCache[type].Add(
-                        property,
-                        Expression.Lambda<Func<object, object>>(callExpr, parameter).Compile());
-                    continue;
-                }
-                
-                var expression = propertyInfo.PropertyType switch
-                {
-                    { } dt when dt == typeof(DateTime) =>
-                        Expression.Convert(Expression.Convert(
-                            propertyGetter, typeof(DateTimeOffset)), typeof(object)),
-                    {} bul when bul == typeof(bool) =>
-                        Expression.Convert(Expression.Convert(
-                            propertyGetter, typeof(byte)), typeof(object)),
-                    {IsEnum: true} =>
-                        Expression.Convert(
-                            Expression.Convert(propertyGetter, typeof(sbyte)), typeof(object)),
-
-                    _ => Expression.Convert(propertyGetter, typeof(object))
-                };
-
-                TypesCache[type].Add(
-                    property,
-                    Expression.Lambda<Func<object, object>>(expression, parameter).Compile());
-            }
-        }
+            AddToCache(type);
 
         var properties = TypesCache[type].Keys;
         var result = properties.ToDictionary(e => e, _ => new List<object>());
@@ -109,5 +59,61 @@ internal static class CachedObjectInvertor
             result[prop].Add(TypesCache[type][prop](item));
 
         return result.ToDictionary(e => e.Key, e => e.Value as object);
+    }
+
+    private static void AddToCache(Type type)
+    {
+        var query = type.GetProperties().Select(p =>
+        {
+            var attribute = p.GetCustomAttribute(typeof(ChFieldAttribute)) as ChFieldAttribute;
+            return new {attribute?.Sort, Prop = p};
+        }).ToList();
+
+        if (query.Any(e => e.Sort != null))
+            query = query.OrderByDescending(e => e.Sort.HasValue).ThenBy(e => e.Sort).ToList();
+
+        TypesCache.TryAdd(type, new Dictionary<string, Func<object, object>>());
+        foreach (var propertyInfo in query.Select(e => e.Prop))
+        {
+            var property = propertyInfo.Name;
+            var parameter = Expression.Parameter(typeof(object));
+            var cast = Expression.Convert(parameter, type);
+            var propertyGetter = Expression.Property(cast, property);
+
+            var callExpr = propertyInfo.PropertyType switch
+            {
+                {IsEnum: true} =>
+                    Expression.Call(
+                        propertyGetter, typeof(Enum).GetMethods().FirstOrDefault(e => e.Name == "ToString")!, null),
+                _ => null
+            };
+
+            if (callExpr != null)
+            {
+                TypesCache[type].Add(
+                    property,
+                    Expression.Lambda<Func<object, object>>(callExpr, parameter).Compile());
+                continue;
+            }
+
+            var expression = propertyInfo.PropertyType switch
+            {
+                { } dt when dt == typeof(DateTime) =>
+                    Expression.Convert(Expression.Convert(
+                        propertyGetter, typeof(DateTimeOffset)), typeof(object)),
+                { } bul when bul == typeof(bool) =>
+                    Expression.Convert(Expression.Convert(
+                        propertyGetter, typeof(byte)), typeof(object)),
+                {IsEnum: true} =>
+                    Expression.Convert(
+                        Expression.Convert(propertyGetter, typeof(sbyte)), typeof(object)),
+
+                _ => Expression.Convert(propertyGetter, typeof(object))
+            };
+
+            TypesCache[type].Add(
+                property,
+                Expression.Lambda<Func<object, object>>(expression, parameter).Compile());
+        }
     }
 }

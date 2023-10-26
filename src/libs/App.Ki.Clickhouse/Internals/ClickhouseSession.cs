@@ -10,20 +10,20 @@ namespace App.Ki.Clickhouse.Internals;
 
 public class ClickhouseSession : IDisposable, IAsyncDisposable
 {
-    private readonly ClickHouseConnection _connection;
     private readonly IOptions<ClickhouseSettings> _dbSettings;
     private readonly ILogger<ClickhouseSession> _logger;
     private readonly Type[] _scalars = { typeof(string), typeof(DateTime), typeof(DateTimeOffset) };
 
     public string Database => _dbSettings.Value.Database;
     public ClickhouseSettings Settings => _dbSettings.Value;
+    public ClickHouseConnection Connection { get; }
 
     public ClickhouseSession(
         ClickHouseConnection connection,
         IOptions<ClickhouseSettings> dbSettings,
         ILogger<ClickhouseSession> logger)
     {
-        _connection = connection;
+        Connection = connection;
         _dbSettings = dbSettings;
         _logger = logger;
     }
@@ -65,9 +65,9 @@ public class ClickhouseSession : IDisposable, IAsyncDisposable
 
     internal async ValueTask BulkAdd(Type type, List<object> data, CancellationToken token)
     {
-        await using var writer = await _connection.CreateColumnWriterAsync(
+        await using var writer = await Connection.CreateColumnWriterAsync(
             $"insert into {CachedObjectInvertor.GetTableName(type)} values", token);
-        var rows = CachedObjectInvertor.GetColumnsWithValues(data);
+        var rows = CachedObjectInvertor.GetColumnsWithValues(data.ToArray());
         await writer.WriteTableAsync(rows, data.Count, token);
 
         await writer.EndWriteAsync(token);
@@ -82,9 +82,12 @@ public class ClickhouseSession : IDisposable, IAsyncDisposable
         return await command.ExecuteNonQueryAsync(token);
     }
 
+    public ClickHouseColumnWriter GetDbWriter(Type type)
+        => Connection.CreateColumnWriter($"insert into {CachedObjectInvertor.GetTableName(type)} values");
+
     private ClickHouseCommand GetCommand(string query, IDictionary<string, object> statements = null)
     {
-        var command = _connection.CreateCommand(query);
+        var command = Connection.CreateCommand(query);
         if (statements is null)
             return command;
 
@@ -126,13 +129,13 @@ public class ClickhouseSession : IDisposable, IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
-        await _connection.DisposeAsync();
+        await Connection.DisposeAsync();
         GC.SuppressFinalize(this);
     }
 
     public void Dispose()
     {
-        _connection?.Dispose();
+        Connection?.Dispose();
         GC.SuppressFinalize(this);
     }
 }

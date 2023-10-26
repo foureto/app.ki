@@ -55,7 +55,7 @@ ORDER BY (
         return (cluster, engine);
     }
 
-    private static TableMetadata GetTableMetadata<T>() where T : class
+    public static TableMetadata GetTableMetadata<T>() where T : class
     {
         var type = typeof(T);
         var tableAttribute = type.GetCustomAttribute<ChTableAttribute>();
